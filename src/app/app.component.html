@@ -1,38 +1,89 @@
 <div class="container">
-  
-  <div class="select-wrapper" >
+  <div class="select-wrapper">
     @if(label()){
-      <label class="block mb-1 text-sm text-slate-800">
-        {{label()}}
-      </label>
-    } 
-    <div 
-    (click)="toggle()"
-    class="select-input">
-      <span>{{ selectedCountry() ?? 'select country'  }}  </span>
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
-      </svg>
+    <label class="block mb-1 text-sm text-slate-800">
+      {{ label() }}
+    </label>
+    }
+    <div class="select-input">
+      <span class="grow" (click)="toggle()"
+        >{{ selectedCountry() ?? "select country" }}
+      </span>
+      @if (!selectedCountry()) {
+      <span
+        (click)="toggle()"
+        [class.rotate-180]="isSelectOpened()"
+        class="inline-block transition-transform duration-500 ease"
+      >
+        <svg
+          height="20"
+          width="20"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="-49.2 -49.2 590.4 590.4"
+          fill="currentColor"
+          class="w-4 h-4"
+        >
+          <g stroke-width="0" />
+          <g stroke-linecap="round" stroke-linejoin="round" />
+          <path
+            d="m484.132 124.986-16.116-16.228c-5.072-5.068-11.82-7.86-19.032-7.86-7.208 0-13.964 2.792-19.036 7.86l-183.84 183.848L62.056 108.554c-5.064-5.068-11.82-7.856-19.028-7.856s-13.968 2.788-19.036 7.856l-16.12 16.128c-10.496 10.488-10.496 27.572 0 38.06l219.136 219.924c5.064 5.064 11.812 8.632 19.084 8.632h.084c7.212 0 13.96-3.572 19.024-8.632l218.932-219.328c5.072-5.064 7.856-12.016 7.864-19.224 0-7.212-2.792-14.068-7.864-19.128"
+          />
+        </svg>
+      </span>
+      }@else {
+      <span (click)="clear()">
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+        >
+          <path
+            stroke="#000000"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 12 7 7m5 5 5 5m-5-5 5-5m-5 5-5 5"
+          />
+        </svg>
+      </span>
+
+      }
     </div>
-    <ul class="bg-white mt-1 overflow-y-auto max-h-0 border border-slate-200 rounded" [class.border-none]="!isSelectOpened()" [class.max-h-60]="isSelectOpened()">
-      <div class="flex items-center px-2 sticky top-0 bg-white ">
-        <input 
-        #input
-        (input)="search$.next(input.value)"
-        class="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm  px-2 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 " 
-        placeholder="Search....">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-          <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
+    <ul
+      class="bg-white mt-1 overflow-y-auto max-h-0 border border-slate-200 rounded"
+      [class.border-none]="!isSelectOpened()"
+      [class.max-h-60]="isSelectOpened()"
+    >
+      <div class="grow flex items-center px-2 sticky top-0 bg-white">
+        <input
+          (ngModelChange)="search$.next(search())"
+          [(ngModel)]="search"
+          class="!w-full grow bg-transparent placeholder:text-slate-400 text-slate-700 text-sm px-2 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400"
+          placeholder="Search...."
+        />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          class="size-6"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z"
+            clip-rule="evenodd"
+          />
         </svg>
       </div>
-      @for(country of countries$ | async;track country){
-        <li class="cursor-pointer p-2 text-sm hover:bg-gray-200 " (click)="onSelectContry(country)" >{{country}}</li>
-          }
+      @for(country of countryList();track country){
+      <li
+        class="p-2 text-sm hover:bg-gray-100"
+        (click)="onSelectContry(country)"
+      >
+        {{ country }}
+      </li>
+      }
     </ul>
   </div>
 </div>
-
-
-
-
-
