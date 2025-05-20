@@ -1,4 +1,12 @@
-import { Component, OnInit, input, model, signal } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  input,
+  model,
+  signal,
+  Input,
+  computed,
+} from '@angular/core';
 import { BehaviorSubject, debounceTime, distinctUntilChanged, map } from 'rxjs';
 import { countriesList } from './app.service';
 import { FormsModule } from '@angular/forms';
@@ -10,12 +18,15 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './app.component.scss',
 })
 export class AppComponent implements OnInit {
+  multi = input<boolean>(false);
   search = model<string | null>(null);
   label = input<string | null>(null);
   search$ = new BehaviorSubject<any>(null);
   isSelectOpened = signal<boolean>(false);
-  selectedCountry = signal<string[] | null>([]);
-  countryList = signal<string[]>([]);
+  selectedItem = signal<any[] | null>([]);
+  itemsList = signal<any[]>(countriesList);
+  isExpanded = signal<boolean>(false);
+  private _itemList = computed(() => this.itemsList());
 
   ngOnInit(): void {
     this.search$
@@ -24,37 +35,54 @@ export class AppComponent implements OnInit {
         distinctUntilChanged(),
         map((val) => {
           if (val) {
-            const filteredCountries = countriesList.filter((country) =>
+            const filteredCountries = this.itemsList().filter((country) =>
               country.toLowerCase().includes(val.toLowerCase())
             );
-            return this.countryList.set(filteredCountries.slice(0, 5));
+            return this.itemsList.set(filteredCountries.slice(0, 5));
           } else {
-            return this.countryList.set(countriesList.slice(0, 5));
+            return this.itemsList.set(this._itemList().slice(0, 5));
           }
         })
       )
       .subscribe();
+    // Set selectedCountry initial value based on multi
+    if (this.multi()) {
+      this.selectedItem.set([]);
+    } else {
+      this.selectedItem.set(null);
+    }
   }
 
   toggle() {
     this.isSelectOpened.update((prev) => !prev);
   }
 
-  onSelectContry(country: string) {
-    const selectedCountry = this.selectedCountry() || [];
-    if (selectedCountry.includes(country)) {
-      this.selectedCountry.set(selectedCountry.filter((c) => c !== country));
+  onSelectItem(item: any) {
+    const selectedItem = this.selectedItem();
+    if (selectedItem?.includes(item)) {
+      this.selectedItem.set(selectedItem.filter((c) => c !== item));
     } else {
-      this.selectedCountry.set([...selectedCountry, country]);
+      this.selectedItem.set([...(selectedItem || []), item]);
     }
+    // } else {
+    //   if (this.selectedCountry() === item) {
+    //     this.selectedCountry.set(null);
+    //   } else {
+    //     this.selectedCountry.set(item);
+    //   }
+    // }
     // this.isSelectOpened.set(false);
   }
-  clear(country: string) {
+  clear(item: any) {
     this.search.set(null);
-    this.countryList.set([]);
+    this.itemsList.set(this._itemList());
     this.isSelectOpened.set(false);
-    const selectedCountry = this.selectedCountry() || [];
-    this.selectedCountry.set(selectedCountry.filter((c) => c !== country));
+    if (this.multi()) {
+      const selectedItem = this.selectedItem();
+      this.selectedItem.set(selectedItem?.filter((c) => c !== item) || []);
+    } else {
+      this.selectedItem.set(null);
+    }
   }
 
   onToggleCountry() {
@@ -63,24 +91,38 @@ export class AppComponent implements OnInit {
 
   showMore() {
     if (this.search()) {
-      const filteredCountries = countriesList.filter((country) =>
+      const filteredCountries = this.itemsList().filter((country) =>
         country.toLowerCase().includes(this.search()!.toLowerCase())
       );
-      this.countryList.set(filteredCountries);
+      this.itemsList.set(filteredCountries);
     } else {
-      this.countryList.set(countriesList);
+      this.itemsList.set(this.itemsList());
     }
     this.isSelectOpened.set(true);
+    this.isExpanded.set(true);
+  }
+
+  showLess() {
+    if (this.search()) {
+      const filteredCountries = this.itemsList().filter((country) =>
+        country.toLowerCase().includes(this.search()!.toLowerCase())
+      );
+      this.itemsList.set(filteredCountries.slice(0, 5));
+    } else {
+      this.itemsList.set(this.itemsList().slice(0, 5));
+    }
+    this.isSelectOpened.set(true);
+    this.isExpanded.set(false);
   }
 
   hasMoreItems(): boolean {
     if (this.search()) {
       return (
-        countriesList.filter((c) =>
+        this.itemsList().filter((c) =>
           c.toLowerCase().includes(this.search()!.toLowerCase())
         ).length > 5
       );
     }
-    return countriesList.length > 5;
+    return this.itemsList().length > 5;
   }
 }
