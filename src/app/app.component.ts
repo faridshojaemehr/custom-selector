@@ -14,7 +14,7 @@ export class AppComponent implements OnInit {
   label = input<string | null>(null);
   search$ = new BehaviorSubject<any>(null);
   isSelectOpened = signal<boolean>(false);
-  selectedCountry = signal<string | null>(null);
+  selectedCountry = signal<string[] | null>([]);
   countryList = signal<string[]>([]);
 
   ngOnInit(): void {
@@ -27,9 +27,9 @@ export class AppComponent implements OnInit {
             const filteredCountries = countriesList.filter((country) =>
               country.toLowerCase().includes(val.toLowerCase())
             );
-            return this.countryList.set(filteredCountries);
+            return this.countryList.set(filteredCountries.slice(0, 5));
           } else {
-            return this.countryList.set([]);
+            return this.countryList.set(countriesList.slice(0, 5));
           }
         })
       )
@@ -41,17 +41,46 @@ export class AppComponent implements OnInit {
   }
 
   onSelectContry(country: string) {
-    this.selectedCountry.set(country);
-    this.isSelectOpened.set(false);
+    const selectedCountry = this.selectedCountry() || [];
+    if (selectedCountry.includes(country)) {
+      this.selectedCountry.set(selectedCountry.filter((c) => c !== country));
+    } else {
+      this.selectedCountry.set([...selectedCountry, country]);
+    }
+    // this.isSelectOpened.set(false);
   }
-  clear() {
+  clear(country: string) {
     this.search.set(null);
     this.countryList.set([]);
     this.isSelectOpened.set(false);
-    this.selectedCountry.set(null);
+    const selectedCountry = this.selectedCountry() || [];
+    this.selectedCountry.set(selectedCountry.filter((c) => c !== country));
   }
 
   onToggleCountry() {
     this.isSelectOpened.update((prev) => !prev);
+  }
+
+  showMore() {
+    if (this.search()) {
+      const filteredCountries = countriesList.filter((country) =>
+        country.toLowerCase().includes(this.search()!.toLowerCase())
+      );
+      this.countryList.set(filteredCountries);
+    } else {
+      this.countryList.set(countriesList);
+    }
+    this.isSelectOpened.set(true);
+  }
+
+  hasMoreItems(): boolean {
+    if (this.search()) {
+      return (
+        countriesList.filter((c) =>
+          c.toLowerCase().includes(this.search()!.toLowerCase())
+        ).length > 5
+      );
+    }
+    return countriesList.length > 5;
   }
 }
