@@ -1,0 +1,45 @@
+<div class="w-full max-w-sm min-w-[200px]">
+  @if (setLabel()) {
+  <label class="block mb-1 text-sm text-slate-800">
+    {{ setLabel() }}
+  </label>
+  }
+  <div class="relative">
+    <select
+      [(ngModel)]="selectedValue"
+      (ngModelChange)="onSelectionChange($event)"
+      (blur)="onTouched()"
+      [disabled]="disabled()"
+      [class.py-2]="size() === 'small'"
+      [class.py-4]="size() === 'large'"
+      class="w-full bg-white placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded pl-3 pr-8 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md appearance-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+      [attr.aria-label]="ariaLabel()"
+    >
+      @if (setPlaceholder()) {
+      <option [value]="defaultValue()" selected [disabled]="disable()">
+        {{ setPlaceholder() }}
+      </option>
+      } @for (option of options(); track $index) {
+      <option [value]="option[value()]" [disabled]="option.disable">
+        {{ getNestedProperties(option, optionLabel()) }}
+      </option>
+      }
+    </select>
+    <svg
+      [class.top-2.5]="size() === 'small'"
+      [class.top-4]="size() === 'large'"
+      class="h-5 w-5 ml-1 absolute right-2.5 top text-slate-700 pointer-events-none"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width="1.2"
+      stroke="currentColor"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+      />
+    </svg>
+  </div>
+</div>

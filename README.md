@@ -1,27 +1,110 @@
-# Myapp
+# Custom Dropdown & Selector Components
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.11.
+This library provides customizable Angular dropdown and selector components. Easily add single or multi-select dropdowns to your forms with a range of configuration options.
 
-## Development server
+## Components
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+### <app-select>
 
-## Code scaffolding
+A versatile dropdown (single or multiple select) for use in Angular reactive forms.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+#### Features
 
-## Build
+• Single or Multi-Select: Toggle with the [multiple] input.  
+• Reactive Forms Compatible: Bind directly with formControlName.  
+• Custom Data Source: Pass any array of items.  
+• Configurable Labels and Values: Use optionLabel and valueKey for display and data.  
+• Placeholder Support: Set your own placeholder text.  
+• Change Event: Listen for selection changes via (selectionChange).
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+#### Usage Example
 
-## Running unit tests
+<form [formGroup]="form">
+  <app-select
+    [items]="countriesList()"
+    [placeholder]="'Select a country'"
+    valueKey="code"
+    optionLabel="name"
+    [multiple]="true"
+    (selectionChange)="onSelectionChange($event)"
+    formControlName="selectedCountries"
+  ></app-select>
+</form>
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+#### Inputs
 
-## Running end-to-end tests
+| Name        | Type    | Description                                          |
+| ----------- | ------- | ---------------------------------------------------- |
+| items       | array   | List of options to show in the dropdown              |
+| placeholder | string  | Placeholder text to display when nothing is selected |
+| valueKey    | string  | Property name to use as the value of each option     |
+| optionLabel | string  | Property name to display for each option             |
+| multiple    | boolean | Enable multi-select if true                          |
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+#### Outputs
 
-## Further help
+| Name            | Type  | Description                      |
+| --------------- | ----- | -------------------------------- |
+| selectionChange | event | Emits when the selection changes |
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+⸻
+
+## Quick Start
+
+1. Install dependencies  
+   Make sure you have Angular and any dependencies installed.
+
+2. Import in Module
+
+```typescript
+import { ReactiveFormsModule } from '@angular/forms';
+// ...other imports
+
+@NgModule({
+  declarations: [
+    AppSelectComponent, // or your custom selector components
+    // ...
+  ],
+  imports: [
+    ReactiveFormsModule,
+    // ...
+  ],
+})
+```
+
+3. Use in Template
+
+See the usage example above.
+
+4. Provide Data  
+   In your component class:
+
+```typescript
+countriesList() {
+  return [
+    { name: 'Finland', code: 'FI' },
+    { name: 'Sweden', code: 'SE' },
+    // ...
+  ];
+}
+```
+
+And create a form group:
+
+```typescript
+form = this.fb.group({
+  selectedCountries: [[]],
+});
+```
+
+⸻
+
+## Customization
+
+You can extend the components to fit your project’s needs, including custom styles, additional events, or other input types.
+
+⸻
+
+## License
+
+MIT
