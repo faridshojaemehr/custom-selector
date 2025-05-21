@@ -15,6 +15,7 @@ export class AppComponent implements OnInit {
     selectedItem: new FormControl(),
   });
   selectedItems = model<any[]>([]);
+
   onSelectionChange(event: any) {
     console.log('output function', event);
   }
