@@ -1,7 +1,5 @@
-<div class="flex flex-col justify-center items-center w-screen h-screen gap-5">
-  <!-- <app-combo-box /> -->
-  <hr class="w-full" />
-  <form [formGroup]="form">
+<div class="p-5">
+  <form [formGroup]="form" class="flex justify-center gap-5">
     <app-select
       [items]="countriesList()"
       [placeholder]="'Select a item'"
@@ -10,11 +8,16 @@
       [multiple]="true"
       (selectionChange)="onSelectionChange($event)"
       formControlName="selectedItem"
+      label="Filter by countries"
+    />
+    <app-dropdown
+      [dropdownOptions]="countriesList()"
+      [optionLabel]="'name'"
+      [value]="'code'"
+      placeholder="All Countries"
+      label="Filter by countries"
+      value="value"
+      [disable]="true"
     />
   </form>
-  <!-- <ac-dropdown
-    [dropdownOptions]="countriesList()"
-    [optionLabel]="'name'"
-    [value]="'code'"
-  /> -->
 </div>
